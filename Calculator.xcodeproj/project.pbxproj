@@ -98,6 +98,7 @@
 		244EBE38298C27DD00A0DB47 /* Calculator */ = {
 			isa = PBXGroup;
 			children = (
+				244EBE68298D0A8700A0DB47 /* Utils */,
 				244EBE39298C27DD00A0DB47 /* CalculatorApp.swift */,
 				244EBE3B298C27DD00A0DB47 /* ContentView.swift */,
 				244EBE3D298C27DF00A0DB47 /* Assets.xcassets */,
@@ -131,6 +132,13 @@
 				244EBE5B298C27DF00A0DB47 /* CalculatorUITestsLaunchTests.swift */,
 			);
 			path = CalculatorUITests;
+			sourceTree = "<group>";
+		};
+		244EBE68298D0A8700A0DB47 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -438,7 +446,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zestmoney.Calculator;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Calculator;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -466,7 +474,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zestmoney.Calculator;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Calculator;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
