@@ -14,7 +14,7 @@ enum CalculatorButtons :String {
     case divide = "/"
     case multiply = "*"
     case subtract = "-"
-    case percentage = "%"
+    case percentage = "/100*"
     case add = "+"
     case one = "1"
     case two = "2"
@@ -28,14 +28,24 @@ enum CalculatorButtons :String {
     case zero = "0"
     case decimal = "."
     case equalTo = "="
+    
+    func getDisplayValue()->String{
+        switch self {
+        case .divide:
+             return "÷"
+        case .multiply:
+            return "X"
+        case .percentage:
+           return "%"
+        default:
+            return self.rawValue
+        }
+    }
 }
+
 
 struct ContentView: View {
     @State var finalValue : String = "0"
-    @State var expressionOperator:CalculatorButtons?
-    @State var operand1:String? = "0"
-    @State var operand2:String? = nil
-    @State var isDecimalButtonClick:Bool = false
     @State var callExpression:String = ""
 
     let buttonArrays : [[CalculatorButtons]] = [[.allClear,.clear,.percentage,.divide],
@@ -45,48 +55,22 @@ struct ContentView: View {
                                                 [.zero,.decimal,.equalTo]]
     
     let operators : [CalculatorButtons] = [.divide,.subtract,.add,.multiply,.percentage]
-    let operatorInString:[String] = [CalculatorButtons.divide.rawValue,CalculatorButtons.subtract.rawValue,CalculatorButtons.add.rawValue,CalculatorButtons.multiply.rawValue,CalculatorButtons.percentage.rawValue]
-//    func handleEqualTo()->String {
-//        var result:String
-//        switch(expressionOperator){
-//        case .add:
-//            result =  "\(self.operand1+self.operand2)"
-//            break
-//        case .subtract:
-//            result =  "\(self.operand1-self.operand2)"
-//            break
-//
-//        case .multiply:
-//            result =  "\(self.operand1*self.operand2)"
-//            break
-//        case .divide:
-//            result =  "\(self.operand1/self.operand2)"
-//        case .percentage:
-//            result =  String(self.operand1.truncatingRemainder(dividingBy: self.operand2))
-//            break
-//        default:
-//           result = "0"
-//            break
-//        }
-//        return result
-//    }
-//    func convertTextToDouble(exp:String){
-//
-//
-//    }
+    let operatorInString = "+-/*";
+
     func removeLastOperatorAndDecimal() -> String {
         var expression: String = self.callExpression
         
         if(expression.count>0 && expression.last == "."){
             expression = String(expression.dropLast())
         }
-        if(expression.count>0  && operatorInString.contains(String(expression.last!))){
+        if(expression.count>0  && operatorInString.contains(expression.last!)){
             expression = String(expression.dropLast())
         }
        
         return expression
     }
-    func evaluateExpression(){
+    
+    func evaluateExpression(isEqual: Bool = false){
         var expression = removeLastOperatorAndDecimal()
         if expression.count == 0{
             self.finalValue = "0"
@@ -97,9 +81,11 @@ struct ContentView: View {
         let number = NSExpression(format:expression).expressionValue(with: nil, context: nil) as! Double
         print(number)
         self.finalValue = String(format:"%g",number)
-        self.operand1 =  self.finalValue
-        self.operand2 = nil
-        self.expressionOperator = nil
+        if(isEqual){
+            self.callExpression = self.finalValue;
+            self.finalValue = "="+self.finalValue;
+        }
+
     }
     
     func convertExpressionToDouble(exp:Array<Character>)-> String{
@@ -132,8 +118,7 @@ struct ContentView: View {
     }
     
     func handleBackSpaceButton(){
-//        let count =  self.callExpression.count-1
-//        print( self.callExpression.prefix(count))
+
         self.callExpression = String(self.callExpression.dropLast())
         if( self.callExpression.count == 0){
             self.finalValue = "0"
@@ -147,7 +132,7 @@ struct ContentView: View {
         var result = ""
         var i = exp.count - 1
         while i >= 0 {
-            if operatorInString.contains(String(exp[i])) {
+            if operatorInString.contains(exp[i]) {
                 return result
             } else {
                 result+=String(exp[i])
@@ -160,12 +145,13 @@ struct ContentView: View {
     func handleCalculatorButtons(value:CalculatorButtons){
         print(value.rawValue)
         if(operators.contains(value)){
-//            Add operator only either there is operand or operator is minus
+            // Add operator only either there is operand or operator is minus
             if(callExpression.count>0 || value == CalculatorButtons.subtract){
-                if( callExpression.count>0 &&  operatorInString.contains(String(callExpression.last!))){
+                // Remove last operator with user enter again another one
+                if( callExpression.count>0 &&  operatorInString.contains(callExpression.last!)){
                     callExpression = String(callExpression.dropLast());
                 }
-                self.callExpression = self.callExpression + value.rawValue
+                self.callExpression = self.callExpression + value.rawValue;
             }
           
             print(self.callExpression)
@@ -176,17 +162,15 @@ struct ContentView: View {
             case .allClear:
                 self.finalValue = "0"
                 self.callExpression = ""
-                self.isDecimalButtonClick = false
                 break
             case .clear:
                 handleBackSpaceButton()
                 break
             case .equalTo:
-                evaluateExpression()
-                self.operand2 = nil
+                evaluateExpression(isEqual: true)
                 break
             case .decimal:
-                  let lastOperand = getLastOperand()
+                let lastOperand = getLastOperand()
                 if(lastOperand.contains(value.rawValue)){
                       return
                   }
@@ -232,7 +216,7 @@ struct ContentView: View {
                                     self.handleCalculatorButtons(value: buttonLabel)
                                   },
                                   label:{
-                                    Text(buttonLabel.rawValue).font(.system(size:26)).foregroundColor(Color.black)
+                                    Text(buttonLabel.getDisplayValue()).font(.system(size:26)).foregroundColor(Color.black)
                                         .frame(minWidth:70, maxWidth: buttonLabel == CalculatorButtons.zero ? .infinity :70, minHeight: 70, alignment: .center)
                                         .padding(10)
                                         .background(Color.orange)
