@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct ContentView: View {
     @State var finalValue : String = "0"
     @State var callExpression:String = ""
@@ -21,7 +20,7 @@ struct ContentView: View {
     let notANumber = "nan";
     let infinity = "inf";
     
-    func formatExpression() -> String{
+    func formatExpression() -> String {
         var expression = removeLastOperatorAndDecimal(expression:self.callExpression)
         expression = convertExpressionToDouble(exp:Array(expression))
         return expression;
@@ -52,7 +51,7 @@ struct ContentView: View {
             self.finalValue = "0"
             return
         }
-        evaluateExpression()
+//        evaluateExpression()
     }
     
     func getLastOperand() -> String {
@@ -75,6 +74,7 @@ struct ContentView: View {
     }
     
     func handleCalculatorCTA(value:CalculatorButtons){
+        var isEqualToPressed : Bool = false;
         if(isExpressionContainInfinity()){
             self.callExpression = "0"
             self.finalValue = "0"
@@ -98,7 +98,7 @@ struct ContentView: View {
             handleBackSpaceCTA()
             break
         case .equalTo:
-            evaluateExpression(isEqual: true)
+            isEqualToPressed = true
             break
         case .decimal:
             let lastOperand = getLastOperand()
@@ -106,16 +106,15 @@ struct ContentView: View {
                 return
             }
             self.callExpression = self.callExpression + value.rawValue
-            evaluateExpression()
             break
         default :
             if(self.finalValue == "0"){
                 self.finalValue = ""
             }
             self.callExpression = self.callExpression + value.rawValue
-            evaluateExpression()
             break
         }
+        evaluateExpression(isEqual: isEqualToPressed)
     }
     
     var body: some View {
@@ -123,8 +122,9 @@ struct ContentView: View {
             Color.white.edgesIgnoringSafeArea(.all)
             VStack{
                 Spacer()
+                
                 CalulatorResultScreen(currentExpression: self.callExpression, finalValue: self.finalValue)
-                //  Buttons
+            
                 ForEach(0...buttonArrays.count-1, id: \.self){
                     index in
                     HStack{
@@ -141,7 +141,7 @@ struct ContentView: View {
                                     .frame(minWidth:70, maxWidth: buttonLabel == CalculatorButtons.zero ? .infinity :70, minHeight: 70, alignment: .center)
                                     .padding(8)
                                     .overlay(RoundedRectangle(cornerRadius: 35)
-                                        .stroke(Color.red, lineWidth: 2))
+                                        .stroke(.black, lineWidth: 2))
                             }
                             .background(buttonLabel.getBgColor()) // If you have this
                             .cornerRadius(35)
